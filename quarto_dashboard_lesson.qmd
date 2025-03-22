@@ -1,0 +1,154 @@
+---
+title: "Gapminder 2007"
+format: dashboard
+theme: superhero
+---
+
+```{python}
+import plotly.express as px
+p = px.line(y=[1,2,3])
+```
+
+# Layouts
+## Row {height="30%"}
+### Column {with="20%"}
+```{python}
+p
+```
+
+### Column {with="80%"}
+```{python}
+p
+```
+
+## Row {height="70%"}
+```{python}
+p
+```
+
+
+
+# Tabsets
+## Row {height="30%"}
+### Column {.tabset with="20%"}
+#### Tab 1
+```{python}
+p
+```
+
+#### Tab 2
+Hello World
+
+### Column {with="80%"}
+```{python}
+p
+```
+
+## Row {.tabset height="70%"}
+### Tab 1
+```{python}
+p
+```
+
+### Tab 2
+ Hello World
+
+
+# Value boxes
+
+```{python}
+tips = px.data.tips()
+num_col=tips.shape[1]
+num_rows = tips.shape[0]
+```
+
+## Row {height="20%"}
+:::{.valuebox title= "Number of columns" color="primary" icon="heart"}
+`{python} num_col`
+
+few columns
+:::
+
+:::{.valuebox title= "Number of rows" color="secondary" icon="bar-chart"}
+`{python} num_rows`
+
+many rows
+:::
+
+:::{.valuebox title= "Small Number" color="#5ba3b6" icon="arrow-down"}
+1
+:::
+
+## Row
+```{python}
+p
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Practice layout
+## Row {height="30%"}
+### Column {with="30%"}
+```{python}
+p
+```
+
+### Column {with="30%"}
+```{python}
+p
+```
+
+### Column {with="30%"}
+```{python}
+p
+```
+
+## Row  {height="70%"}
+### Column {with="70%"}
+```{python}
+p
+```
+
+### Column {with="30%"}
+```{python}
+p
+```
+
+
+# Practice Tabsets
+## Row {height="20%"}
+### Column {with="50%"}
+```{python}
+p
+```
+
+### Column {with="50%"}
+```{python}
+p
+```
+
+## Row {height="80%"}
+### Column {with="70%"}
+```{python}
+p
+```
+
+### Column {.tabset with="30%"}
+### Tab 1
+```{python}
+p
+```
+
+### Tab 2
+ Hello World

@@ -1,0 +1,390 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Gapminder 2007\"\n",
+        "format: dashboard\n",
+        "theme: superhero\n",
+        "---"
+      ],
+      "id": "29d22708"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import plotly.express as px\n",
+        "p = px.line(y=[1,2,3])"
+      ],
+      "id": "821fa04d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Layouts\n",
+        "## Row {height=\"30%\"}\n",
+        "### Column {with=\"20%\"}"
+      ],
+      "id": "da3d6f1d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "9c67f674",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {with=\"80%\"}"
+      ],
+      "id": "577ff9b1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "14f35a68",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {height=\"70%\"}"
+      ],
+      "id": "d3ac3c13"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "441db0af",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Tabsets\n",
+        "## Row {height=\"30%\"}\n",
+        "### Column {.tabset with=\"20%\"}\n",
+        "#### Tab 1"
+      ],
+      "id": "c121ff34"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "252689b2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "#### Tab 2\n",
+        "Hello World\n",
+        "\n",
+        "### Column {with=\"80%\"}"
+      ],
+      "id": "953de34f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "a7b5cde1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {.tabset height=\"70%\"}\n",
+        "### Tab 1"
+      ],
+      "id": "45e48117"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "3dc86cda",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Tab 2\n",
+        " Hello World\n",
+        "\n",
+        "\n",
+        "# Value boxes\n"
+      ],
+      "id": "6747cb79"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "tips = px.data.tips()\n",
+        "num_col=tips.shape[1]\n",
+        "num_rows = tips.shape[0]"
+      ],
+      "id": "ca55311d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {height=\"20%\"}\n",
+        ":::{.valuebox title= \"Number of columns\" color=\"primary\" icon=\"heart\"}\n",
+        "`{python} num_col`\n",
+        "\n",
+        "few columns\n",
+        ":::\n",
+        "\n",
+        ":::{.valuebox title= \"Number of rows\" color=\"secondary\" icon=\"bar-chart\"}\n",
+        "`{python} num_rows`\n",
+        "\n",
+        "many rows\n",
+        ":::\n",
+        "\n",
+        ":::{.valuebox title= \"Small Number\" color=\"#5ba3b6\" icon=\"arrow-down\"}\n",
+        "1\n",
+        ":::\n",
+        "\n",
+        "## Row"
+      ],
+      "id": "7bea8fdf"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "d9f64b26",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Practice layout\n",
+        "## Row {height=\"30%\"}\n",
+        "### Column {with=\"30%\"}"
+      ],
+      "id": "a10bbf62"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "7a400b95",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {with=\"30%\"}"
+      ],
+      "id": "27027a5c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "e198da96",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {with=\"30%\"}"
+      ],
+      "id": "326e7cc4"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "78613ce5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row  {height=\"70%\"}\n",
+        "### Column {with=\"70%\"}"
+      ],
+      "id": "8d0d715d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "3d2755de",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {with=\"30%\"}"
+      ],
+      "id": "8fa54f21"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "2e53c36d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Practice Tabsets\n",
+        "## Row {height=\"20%\"}\n",
+        "### Column {with=\"50%\"}"
+      ],
+      "id": "c134a2b6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "16b36c9d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {with=\"50%\"}"
+      ],
+      "id": "60620982"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "716e060b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {height=\"80%\"}\n",
+        "### Column {with=\"70%\"}"
+      ],
+      "id": "ca4314b0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "0b1fbae8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Column {.tabset with=\"30%\"}\n",
+        "### Tab 1"
+      ],
+      "id": "fc9677b5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p"
+      ],
+      "id": "69ec9991",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Tab 2\n",
+        " Hello World"
+      ],
+      "id": "e12693ec"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

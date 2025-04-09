@@ -1,0 +1,546 @@
+---
+title: "Final project Lea Adams - Analysis of democracy index and Happiness score"
+format: dashboard
+theme: united
+---
+
+```{python}
+# Import packages
+import pandas as pd
+import country_converter as cc
+import plotly.express as px
+import itables 
+import numpy as np
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+```
+
+```{python}
+# import and print datasets
+demo = pd.read_csv("demox_eiu.csv")
+happy = pd.read_csv("hapiscore_whr.csv")
+```
+
+```{python}
+# convert datasets into long format
+demo_long = demo.melt(id_vars=["country"], var_name="year", value_name="democracy_index")
+happy_long = happy.melt(id_vars=["country"], var_name="year", value_name="happiness_score")
+```
+
+```{python}
+# adjust data types in columns
+demo_clean = demo_long.dropna()
+demo_clean["year"] = demo_clean["year"].astype(int)
+demo_clean["democracy_index"] = demo_clean["democracy_index"].astype(float)
+
+happy_clean = happy_long.dropna()
+happy_clean["year"] = happy_clean["year"].astype(int)
+happy_clean["happiness_score"] = happy_clean["happiness_score"].astype(float)
+```
+
+```{python}
+# filter the years common in both datasets (2006-2020), convert the countries to county codes and merge
+demo_clean = demo_clean[(demo_clean["year"] >= 2006) & (demo_clean["year"] <= 2020)]
+happy_clean = happy_clean[(happy_clean["year"] >= 2006) & (happy_clean["year"] <= 2020)]
+
+demo_clean['country'] = demo_clean['country'].replace('UAE', 'United Arab Emirates')
+demo_clean['country_code'] = cc.convert(demo_clean['country'], to='ISO3')
+happy_clean['country'] = happy_clean['country'].replace('UAE', 'United Arab Emirates')
+happy_clean['country_code'] = cc.convert(happy_clean['country'], to='ISO3')
+```
+
+```{python}
+# merge and clean up merged dataset
+merged = pd.merge(demo_clean, happy_clean, on=["country_code", "year"], how="left")
+merged_clean = merged[["country_x", "year", "happiness_score", "democracy_index", "country_code"]]
+```
+
+```{python}
+#ANALYSIS OF DEMOCRACY INDEX
+```
+
+```{python}
+# highest and lowest democracy scores in 2020
+top_democracy = demo_clean[demo_clean['year'] == 2020].loc[demo_clean[demo_clean['year'] == 2020]['democracy_index'].idxmax()]
+top_democracy_country = top_democracy['country']
+top_democracy_score = top_democracy['democracy_index']
+top_democracy_score = str(top_democracy_score)
+
+lowest_democracy = demo_clean[demo_clean['year'] == 2020].loc[demo_clean[demo_clean['year'] == 2020]['democracy_index'].idxmin()]
+lowest_democracy_country = lowest_democracy['country']
+lowest_democracy_score = lowest_democracy['democracy_index']
+lowest_democracy_score = str(lowest_democracy_score)
+```
+
+```{python}
+# Map of countries by Democracy score
+demo_clean_2020 = demo_clean[demo_clean["year"] == 2020]
+map_fig = px.choropleth(
+    demo_clean_2020,
+    locations="country_code",
+    color="democracy_index",
+    hover_name="country",
+    title="Map of Countries by Democracy Index (2020)",
+    color_continuous_scale=[
+        [0.0, "#d7191c"],  
+        [0.5, "#ffffbf"], 
+        [1.0, "#1a9641"]],
+).update_layout(coloraxis_showscale=True,
+    title_font=dict(size=20, family="Arial", color="black"),  # Custom font
+    title_font_family="Arial Black",                          
+    title_font_color="black",
+    title_x=0.5)
+```
+
+```{python}
+# make tables with top 10 highest and lowest democracy scores
+demo_clean_top10 = demo_clean[demo_clean["year"] == 2020].sort_values(by="democracy_index", ascending=False).head(10)
+demo_clean_top10 = demo_clean_top10[["country", "democracy_index"]]
+
+demo_clean_lowest10 = demo_clean[demo_clean["year"] == 2020].sort_values(by="democracy_index", ascending=True).head(10)
+demo_clean_lowest10 = demo_clean_lowest10[["country", "democracy_index"]]
+```
+
+```{python}
+# ANALYSIS OF HAPPINESS INDEX
+```
+
+```{python}
+# highest, lowest and mean happiness index in 2020
+top_happy = happy_clean[happy_clean['year'] == 2020].loc[happy_clean[happy_clean['year'] == 2020]['happiness_score'].idxmax()]
+top_happy_country = top_happy['country']
+top_happy_score = top_happy['happiness_score']
+top_happy_score = str(top_happy_score)
+
+lowest_happy = happy_clean[happy_clean['year'] == 2020].loc[happy_clean[happy_clean['year'] == 2020]['happiness_score'].idxmin()]
+lowest_happy_country = lowest_happy['country']
+lowest_happy_score = lowest_happy['happiness_score']
+lowest_happy_score = str(lowest_happy_score)
+
+mean_happiness_2020 = round(happy_clean[happy_clean["year"] == 2020]["happiness_score"].mean(), 2)
+mean_happiness_2020 = str(mean_happiness_2020)
+```
+
+```{python}
+# Line graph of happines score over time
+countries = ["China", "Bolivia", "Canada", "Switzerland", "Egypt", "Nigeria", "Pakistan"]
+filtered_happy = happy_clean[happy_clean["country"].isin(countries)]
+line1 = px.line(
+    filtered_happy,
+    x="year",
+    y="happiness_score",
+    color="country",
+    title="Happiness Score Over Time (Selected Countries)",
+    markers=True
+);
+
+line1.update_layout(
+    plot_bgcolor='white',        
+    paper_bgcolor='white',
+    title={
+        'text': "Happiness Score Over Time (Selected Countries)",
+        'font': dict(size=20, color='black', family='Arial', weight='bold'), 
+        'x': 0.5  
+    },
+    xaxis=dict(
+        title='Year',
+        titlefont=dict(size=16, color='black', family='Arial', weight='bold'),
+        tickfont=dict(color='black'),
+        linecolor='black',  
+        showline=True
+    ),
+    yaxis=dict(
+        title='Happiness Score',
+        range=[1, 100],
+        titlefont=dict(size=16, color='black', family='Arial', weight='bold'),
+        tickfont=dict(color='black'),
+        linecolor='black',
+        showline=True
+    )
+);
+```
+
+```{python}
+# convert counries to continent, and plot mean happiness score by continent
+happy_2020 = happy_clean[happy_clean["year"] == 2020]
+happy_2020["continent"] = cc.convert(names=happy_2020["country"], to="continent")
+continent_avg = happy_2020.groupby("continent", as_index=False)["happiness_score"].mean()
+
+bar = px.bar(
+    continent_avg,
+    x="continent",
+    y="happiness_score",
+    title="Average Happiness Score by Continent (2020)",
+    labels={"happiness_score": "Mean Happiness Score", "continent": "Continent"},
+    color="continent"
+);
+bar.update_layout(
+    plot_bgcolor='white',
+    xaxis_title="Continent",
+    yaxis_title="Happiness Score",
+    title_font=dict(size=20, family="Arial", color="black"),
+    title={
+        'text': "Average Happiness Score by Continent (2020)",
+        'font': dict(size=20, color='black', family='Arial', weight='bold'), 
+        'x': 0.5  
+    },
+    xaxis=dict(
+        linecolor='black',
+        titlefont=dict(size=16, color='black', family='Arial', weight='bold'),
+        tickfont=dict(color='black'),
+        showline=True
+    ),
+    yaxis=dict(
+        linecolor='black',
+        range=[1, 100],
+        titlefont=dict(size=16, color='black', family='Arial', weight='bold'),
+        tickfont=dict(color='black'),
+        showline=True
+    )
+);
+```
+
+```{python}
+# MERGED ANALYSIS
+```
+
+```{python}
+# convert counries to continent, and make scatter plot of Democratic Index and happiness score (2020)
+merged_2020 = merged_clean[merged_clean["year"] == 2020]
+
+scatter = px.scatter(
+    merged_2020,
+    x="democracy_index",
+    y="happiness_score",
+    text="country_x",
+    title="Democracy Index vs. Happiness Score (2020)",
+    labels={
+        "democracy_index": "Democracy Index",
+        "happiness_score": "Happiness Score"
+    }
+);
+
+# Step 3: Style it
+scatter.update_traces(marker=dict(size=5, color="#FF6833"), textposition='top center');
+scatter.update_layout(
+    plot_bgcolor="white",
+    title_font=dict(size=20, family="Arial", color="black", weight='bold'),
+    title_x=0.5,
+    xaxis=dict(
+        linecolor="black",
+        titlefont=dict(size=16, color="black", family="Arial", weight='bold'),
+        tickfont=dict(color="black"),
+        showline=True
+    ),
+    yaxis=dict(
+        linecolor="black",
+        range=[1, 100],
+        titlefont=dict(size=16, color="black", family="Arial", weight='bold'),
+        tickfont=dict(color="black"),
+        showline=True
+    )
+);
+```
+
+```{python}
+merged_2020["continent"] = cc.convert(names=merged_2020["country_x"], to="continent")
+merged_2020_avg = merged_2020.groupby("continent", as_index=False)[["happiness_score", "democracy_index"]].mean()
+
+scatter2 = px.scatter(
+    merged_2020_avg,
+    x="democracy_index",
+    y="happiness_score",
+    text="continent",
+    color="continent",
+    title="Average Democracy vs. Happiness Score by Continent (2020)",
+    labels={
+        "democracy_index": "Democracy Index",
+        "happiness_score": "Happiness Score"
+    }
+);
+
+scatter2.update_traces(marker=dict(size=10), textposition='top center');
+scatter2.update_layout(
+    plot_bgcolor="white",
+    title_font=dict(size=20, family="Arial", color="black", weight='bold'),
+    title_x=0.5,
+    xaxis=dict(
+        linecolor='black',
+        range=[1, 100],
+        titlefont=dict(size=16, color='black', family="Arial", weight='bold'),
+        tickfont=dict(color='black', family="Arial", weight='bold'),
+        showline=True
+    ),
+    yaxis=dict(
+        linecolor='black',
+        range=[1, 100],
+        titlefont=dict(size=16, color='black', family="Arial", weight='bold'),
+        tickfont=dict(color='black', family="Arial", weight='bold'),
+        showline=True
+    )
+);
+```
+
+```{python}
+# Find the country that is closest to the median democracy_index
+median_democracy = merged_2020["democracy_index"].median()
+merged_2020["median_diff"] = (merged_2020["democracy_index"] - median_democracy).abs() # Calculate the absolute difference from the median
+middle_row = merged_2020.loc[merged_2020["median_diff"].idxmin()]# Find the row with the smallest difference
+middle_row # Bhutan
+
+# Make dual axis plots for Norway (highest democracy_score), North Korea (lowest democracy_score) and the country with a (closest to) median democracy score (2020)
+Norway = merged_clean[merged_clean["country_x"] == "Norway"].copy()
+fig_Norway = make_subplots(specs=[[{"secondary_y": True}]]);
+fig_Norway.add_trace(
+    go.Scatter(
+        x=Norway["year"],
+        y=Norway["democracy_index"],
+        name="Democracy Index",
+        line=dict(color="black")
+    ),
+    secondary_y=False
+);
+fig_Norway.add_trace(
+    go.Scatter(
+        x=Norway["year"],
+        y=Norway["happiness_score"],
+        name="Happiness Score",
+        line=dict(color="#FF6833")
+    ),
+    secondary_y=True
+);
+fig_Norway.update_layout(
+    title="Norway",
+    plot_bgcolor="white",
+    title_font=dict(size=20, color='black', family="Arial", weight='bold'),
+    title_x=0.5,
+    xaxis_title="Year"
+);
+fig_Norway.update_yaxes(
+    title_text="Democracy Index",
+    range=[1, 100], 
+    secondary_y=False,
+    linecolor='black',
+    titlefont=dict(size=16, color='black', family="Arial", weight='bold'),
+        tickfont=dict(color='black', family="Arial", weight='bold'),
+);
+fig_Norway.update_yaxes(
+    title_text="Happiness Score",
+    range=[1, 100], 
+    secondary_y=True,
+    linecolor='#FF6833',
+    titlefont=dict(size=16, color='#FF6833', family="Arial", weight='bold'),
+        tickfont=dict(color='#FF6833', family="Arial", weight='bold'),
+);
+
+Bhutan = merged_clean[merged_clean["country_x"] == "Bhutan"].copy()
+fig_Bhutan = make_subplots(specs=[[{"secondary_y": True}]]);
+fig_Bhutan.add_trace(
+    go.Scatter(
+        x=Bhutan["year"],
+        y=Bhutan["democracy_index"],
+        name="Democracy Index",
+        line=dict(color="black")
+    ),
+    secondary_y=False
+);
+fig_Bhutan.add_trace(
+    go.Scatter(
+        x=Bhutan["year"],
+        y=Bhutan["happiness_score"],
+        name="Happiness Score",
+        line=dict(color="#FF6833")
+    ),
+    secondary_y=True
+);
+fig_Bhutan.update_layout(
+    title="Bhutan",
+    plot_bgcolor="white",
+    title_font=dict(size=20, color='black', family="Arial", weight='bold'),
+    title_x=0.5,
+    xaxis_title="Year"
+);
+fig_Bhutan.update_yaxes(
+    title_text="Democracy Index",
+    range=[1, 100], 
+    secondary_y=False,
+    linecolor='black',
+    titlefont=dict(size=16, color='black', family="Arial", weight='bold'),
+        tickfont=dict(color='black', family="Arial", weight='bold'),
+);
+fig_Bhutan.update_yaxes(
+    title_text="Happiness Score",
+    range=[1, 100], 
+    secondary_y=True,
+    linecolor='#FF6833',
+    titlefont=dict(size=16, color='#FF6833', family="Arial", weight='bold'),
+        tickfont=dict(color='#FF6833', family="Arial", weight='bold'),
+);
+
+North_Korea = merged_clean[merged_clean["country_code"] == "PRK"].copy()
+fig_North_Korea = make_subplots(specs=[[{"secondary_y": True}]]);
+fig_North_Korea.add_trace(
+    go.Scatter(
+        x=North_Korea["year"],
+        y=North_Korea["democracy_index"],
+        name="Democracy Index",
+        line=dict(color="black")
+    ),
+    secondary_y=False
+);
+fig_North_Korea.add_trace(
+    go.Scatter(
+        x=North_Korea["year"],
+        y=North_Korea["happiness_score"],
+        name="Happiness Score",
+        line=dict(color="#FF6833")
+    ),
+    secondary_y=True
+);
+fig_North_Korea.update_layout(
+    title="North Korea",
+    plot_bgcolor="white",
+    title_font=dict(size=20, color='black', family="Arial", weight='bold'),
+    title_x=0.5,
+    xaxis_title="Year"
+);
+fig_North_Korea.update_yaxes(
+    title_text="Democracy Index",
+    range=[1, 100], 
+    secondary_y=False,
+    linecolor='black',
+    titlefont=dict(size=16, color='black', family="Arial", weight='bold'),
+        tickfont=dict(color='black', family="Arial", weight='bold'),
+);
+fig_North_Korea.update_yaxes(
+    title_text="Happiness Score",
+    range=[1, 100], 
+    secondary_y=True,
+    linecolor='#FF6833',
+    titlefont=dict(size=16, color='#FF6833', family="Arial", weight='bold'),
+        tickfont=dict(color='#FF6833', family="Arial", weight='bold'),
+);
+```
+
+
+```{python}
+merged_clean
+```
+
+# Democracy index (EIU)
+## Row {height="15%"}
+The democracy index (EIU) represents an assesment of the democratic qualitys of a political system. Using data from the Economist Inteligence Unit (EIU), the democracy index is formed by looking at five areas: Electoral pluralism index, Government index, Political participation indexm, Political culture index and Civil liberty index. For more comprehensive information and access to the data, please refer to the link below: https://www.gapminder.org/data/
+
+## Row {height="20%"}
+:::{.valuebox title= "HIGHEST DEMOCRACY SCORE (2020)" color="#FF6833" icon="bar-chart-line-fill"}
+
+`{python} top_democracy_score`
+
+Norway
+:::
+
+:::{.valuebox title= "LOWEST DEMOCRACY SCORE (2020)" color="#FF6833" icon="bar-chart-line"}
+
+`{python} lowest_democracy_score`
+
+North Korea
+:::
+
+## Row {height=65%}
+### Column {width="60%"}
+
+```{python}
+map_fig
+```
+
+### Column {width="40%"}
+:::{.panel-tabset}
+### Top 10 highest democracy scores
+Top 10 countries with the highest democracy scores (2020).
+```{python}
+demo_clean_top10.reset_index(drop=True)
+```
+
+### Top 10 lowest democracy scores
+Top 10 countries with the lowest democracy scores (2020).
+```{python}
+demo_clean_lowest10.reset_index(drop=True)
+```
+
+:::
+
+# Happiness score (WHR)
+## Row {height="10%"}
+The Happiness Score (WHR) measures the national average of life satisfaction, capturing how happy people feel about their lives. For more comprehensive information and access to the data, please refer to the link below: https://www.gapminder.org/data/
+
+## Row {height="20%"}
+:::{.valuebox title= "HIGHEST HAPPINESS SCORE (2020)" color="#FF6833" icon="bar-chart-line-fill"}
+
+`{python} top_happy_score`
+
+Finland
+:::
+
+:::{.valuebox title= "LOWEST HAPPINESS SCORE (2020)" color="#FF6833" icon="bar-chart-line"}
+
+`{python} lowest_happy_score`
+
+Lebanon
+:::
+
+:::{.valuebox title= "MEAN HAPPINESS SCORE (2020)" color="#FF6833" icon="dash-circle"}
+
+`{python} mean_happiness_2020`
+
+:::
+
+## Row {height="70%"}
+### Column {width="50%"}
+
+```{python}
+line1
+```
+
+### Column {width="50%"}
+
+```{python}
+bar
+```
+
+# Joined analysis
+## Row {height="10%"}
+The joint analysis of the democratic index (EIU) and happiness score (WHR) could show if the democratic index and the subjective life-satisfaction of citizens correlate. 
+
+## Row {height="35%"}
+### Column {width="50%"}
+```{python}
+scatter
+```
+
+### Column {width="50%"}
+
+```{python}
+scatter2
+```
+
+## Row {height="35%"}
+### Column {width="33%"}
+
+```{python}
+fig_North_Korea
+```
+
+### Column {width="33%"}
+
+```{python}
+fig_Bhutan
+```
+
+### Column {width="33%"}
+
+```{python}
+fig_Norway
+```
+
+## Row {height="20%"}
+The joint analysis of the democratic index (EIU) and the happiness score (WHR) revealed that a high democratic level generally correlates with a high subjective life-satisfaction of citizens. However, some countries with a rather low democracy index still showed higher happiness scores than countries with a medium democracy index. Moreover, countries with a lower democracy index often show incomplete or entirely missing happiness scores. Both of these phenomena could be caused by potential challenging conditions for citizen surveys in such countries.
